@@ -1,7 +1,6 @@
 "use client";
 import styled from "styled-components";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 const Wrapper = styled.div`
   min-height: 100vh;
@@ -12,7 +11,7 @@ const Wrapper = styled.div`
   background: #fafafa;
 `;
 
-const LoginBox = styled.div`
+const RegisterBox = styled.div`
   width: 350px;
   background: #fff;
   border: 1px solid #dbdbdb;
@@ -23,11 +22,10 @@ const LoginBox = styled.div`
   align-items: center;
 `;
 
-const Logo = styled.div`
-  font-family: 'Grand Hotel', cursive, sans-serif;
-  font-size: 44px;
-  margin-bottom: 32px;
-  margin-top: 8px;
+const Title = styled.div`
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 24px;
 `;
 
 const Input = styled.input`
@@ -41,7 +39,7 @@ const Input = styled.input`
   color: #111;
 `;
 
-const LoginBtn = styled.button`
+const RegisterBtn = styled.button`
   width: 100%;
   background: #4cb5f9;
   color: #fff;
@@ -58,63 +56,6 @@ const LoginBtn = styled.button`
   }
 `;
 
-const Or = styled.div`
-  display: flex;
-  align-items: center;
-  width: 100%;
-  margin: 16px 0 12px 0;
-  color: #888;
-  font-size: 13px;
-  font-weight: 500;
-`;
-
-const Line = styled.div`
-  flex: 1;
-  height: 1px;
-  background: #dbdbdb;
-`;
-
-const FacebookBtn = styled.button`
-  width: 100%;
-  background: none;
-  border: none;
-  color: #385185;
-  font-weight: 600;
-  font-size: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 16px;
-  cursor: pointer;
-`;
-
-const Forgot = styled.a`
-  color: #00376b;
-  font-size: 13px;
-  text-align: center;
-  margin-bottom: 16px;
-  cursor: pointer;
-`;
-
-const SignupBox = styled.div`
-  width: 350px;
-  background: #fff;
-  border: 1px solid #dbdbdb;
-  border-radius: 8px;
-  padding: 20px 40px;
-  text-align: center;
-  margin-top: 12px;
-  font-size: 14px;
-`;
-
-const SignupLink = styled.a`
-  color: #0095f6;
-  font-weight: 600;
-  margin-left: 4px;
-  cursor: pointer;
-`;
-
 const Message = styled.div.withConfig({
   shouldForwardProp: (prop) => prop !== "error"
 })`
@@ -124,13 +65,13 @@ const Message = styled.div.withConfig({
   min-height: 18px;
 `;
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -138,17 +79,17 @@ export default function LoginPage() {
     setMessage("");
     setError(false);
     try {
-      const res = await fetch("/api/login", {
+      const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, name }),
       });
       const data = await res.json();
       if (data.success) {
-        localStorage.setItem('hyoplanner_user', JSON.stringify(data.user));
-        router.push("/");
+        setMessage("회원가입이 완료되었습니다! 로그인 해주세요.");
+        setEmail(""); setPassword(""); setName("");
       } else {
-        setMessage(data.error || "로그인 실패");
+        setMessage(data.error || "회원가입 실패");
         setError(true);
       }
     } catch {
@@ -160,12 +101,12 @@ export default function LoginPage() {
 
   return (
     <Wrapper>
-      <LoginBox>
-        <Logo>Instagram</Logo>
+      <RegisterBox>
+        <Title>회원가입</Title>
         <form onSubmit={handleSubmit} style={{ width: "100%" }}>
           <Input
             type="email"
-            placeholder="전화번호, 사용자 이름 또는 이메일"
+            placeholder="이메일"
             value={email}
             onChange={e => setEmail(e.target.value)}
             required
@@ -177,24 +118,16 @@ export default function LoginPage() {
             onChange={e => setPassword(e.target.value)}
             required
           />
-          <LoginBtn type="submit" disabled={loading}>{loading ? "로그인 중..." : "로그인"}</LoginBtn>
+          <Input
+            type="text"
+            placeholder="이름 (선택)"
+            value={name}
+            onChange={e => setName(e.target.value)}
+          />
           <Message error={error}>{message}</Message>
+          <RegisterBtn type="submit" disabled={loading}>{loading ? "가입 중..." : "회원가입"}</RegisterBtn>
         </form>
-        <Or>
-          <Line />
-          <span style={{ margin: '0 16px' }}>또는</span>
-          <Line />
-        </Or>
-        <FacebookBtn>
-          <img src="https://static.xx.fbcdn.net/rsrc.php/v3/yx/r/-XF4FQcre_i.png" alt="facebook" width={18} height={18} />
-          Facebook으로 로그인
-        </FacebookBtn>
-        <Forgot>비밀번호를 잊으셨나요?</Forgot>
-      </LoginBox>
-      <SignupBox>
-        계정이 없으신가요?
-        <SignupLink href="/register">가입하기</SignupLink>
-      </SignupBox>
+      </RegisterBox>
     </Wrapper>
   );
 } 

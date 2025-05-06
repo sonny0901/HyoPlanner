@@ -40,6 +40,12 @@ export default function Calendar() {
     }
   };
 
+  const isToday = (d) =>
+    d &&
+    year === today.getFullYear() &&
+    month === today.getMonth() &&
+    d === today.getDate();
+
   return (
     <CalendarWrapper>
       <CalendarNav>
@@ -55,7 +61,9 @@ export default function Calendar() {
       {weeks.map((week, i) => (
         <CalendarRow key={i}>
           {week.map((date, j) => (
-            <CalendarCell key={j}>{date ? date : ""}</CalendarCell>
+            <CalendarCell key={j} $isToday={isToday(date)}>
+              {date ? date : ""}
+            </CalendarCell>
           ))}
         </CalendarRow>
       ))}

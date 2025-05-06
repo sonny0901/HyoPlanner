@@ -51,9 +51,17 @@ export const CalendarCell = styled.div`
   margin: 1px;
   aspect-ratio: 1 / 1;
   display: flex;
-  font-weight: 500;
+ㅠ  font-weight: 500;
   color: #222;
   background: #fff;
   border: 1px solid #f3f3f3;
   font-size: 14px;
+  ${({ isToday }) =>
+    isToday &&
+    `
+      border: 2px solid #4cb5f9;
+      color: #4cb5f9;
+      font-weight: bold;
+      background: #eaf6ff;
+    `}
 `; 
